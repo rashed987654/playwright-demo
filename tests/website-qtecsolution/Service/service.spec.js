@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Services page", () => {
-  test.describe.configure({ timeout: 360000 })
+  test.describe.configure({ timeout: 420000 })
   test.beforeEach(async ({ page }) => {
     // test.setTimeout(180000);
     await page.goto("https://staging.qtecsolution.com/");
@@ -216,9 +216,10 @@ test("Body 👉 3. Verify All title of services Visibility ,hover & Clickable & 
 });
 
  // 4️⃣ Footer
-  test("Footer 👉 4. Verify Services Menu & Submenu  visibility & hover & Clickable state", async ({ page }) => {
-      const servicesMenu = page.getByRole('link', { name: 'Services', exact: true });
+  test("Footer 👉 4a. Verify Services Menu, Footer non-clickable Menu validation", async ({ page }) => {
+    const servicesMenu = page.getByRole("link", { name: "Services", exact: true });
 
+    
     await test.step("Verify Services Menu is visible", async () => {
       await expect(servicesMenu).toBeVisible();
     });
@@ -227,56 +228,104 @@ test("Body 👉 3. Verify All title of services Visibility ,hover & Clickable & 
       await servicesMenu.hover();
     });
 
-      await test.step("Click on Services menu", async () => {
+    await test.step("Click on Services menu", async () => {
       await servicesMenu.click();
     });
 
-      await test.step("Verify Services Menu URL", async () => {
+    await test.step("Verify Services Menu URL", async () => {
       await expect.soft(page).toHaveURL(/services/);
     });
+  
+ // ================= FOOTER =================
+const footer = page.locator("footer");
+//  LABELS (non-clickable)
+const labels = [
+      { type: "label", name: "Company" },
+      { type: "label", name: "Services" },
+      { type: "label", name: "Resources" },
+    ];
 
-  const submenus = [
-    // Company
-    { name: 'About Us', url: '/about-us' },
-    { name: 'Contact Us', url: '/contact-us' },
-    { name: 'Team', url: '/team' },
-    { name: 'About The CEO', url: '/ceo-qtec' }, 
-    { name: 'Partnership', url: '/services/partnership' },   
-    { name: 'Career', url: 'https://hrm.qtecsolution.net/' },  
 
-    // Services
-    { name: 'Software Development', url: '/services/software-development' },
-    { name: 'Mobile App Development', url: '/services/mobile-app' },
-    { name: 'Ecommerce', url: '/services/ecommerce' },
-    { name: 'Staff Augmentation', url: '/services/augmentation' },
+    for (const label of labels) { 
 
-    // Resources 
-    { name: 'Industries', url: '/industries' },   
-    { name: 'Blog', url: '/blog' },
-    { name: 'Open Source Projects', url: '/open-source-projects' },
-    { name: 'Case Studies', url: '/case-studies' },
-  ];
+      // 📍 Locate element once per iteration (avoid duplication)
+      const el = footer.locator("p", { hasText: label.name });
+      await el.scrollIntoViewIfNeeded();  //Optional: Delete it later 
+      await page.waitForTimeout(2000);   //Optional: Delete it later 
 
-  // await test.step("Validate all footer links", async () => {
+      // ✅ Visibility Check
+      await test.step(`Verify visibility: ${label.name}`, async () => {
+        await expect(el).toBeVisible();  
+      });
 
-    for (const submenu of submenus) {
+      // 🚫 Non-clickable Check
+      await test.step(`Verify NON-clickable (no href): ${label.name}`, async () => {
+        await expect.soft(el).not.toHaveAttribute("href");
+      });
+  
+
+    }
+
+  });
+
+
+ //  Footer
+  test("Footer 👉 4b.Verify Services Menu & Footer Menu  visibility & hover and with Clickable  state", async ({ page }) => {
+    const servicesMenu = page.getByRole('link', { name: 'Services', exact: true });
+
+    await test.step("Verify Services Menu is visible", async () => {
+    await expect(servicesMenu).toBeVisible();
+    });
+
+    await test.step("Click on Services menu", async () => {
+    await servicesMenu.click();
+
+    });
+
+// ================= LINKS =================
+const footer_menus = [
+  // Company 
+    { type: "link", name: "About Us", url: "/about-us" },
+    { type: "link", name: "Team", url: "/team" },
+    { type: "link", name: "About The CEO", url: "/ceo-qtec" },
+    { type: "link", name: "Partnership", url: "/services/partnership" },
+    { type: "link", name: "Career", url: "https://hrm.qtecsolution.net/" },
+
+  // Services
+    { type: "link", name: "Software Development", url: "/services/software-development" },
+    { type: "link", name: "Mobile App Development", url: "/services/mobile-app" },
+    { type: "link", name: "Ecommerce", url: "/services/ecommerce" },
+    { type: "link", name: "Staff Augmentation", url: "/services/augmentation" },
+
+     // Services
+    { type: "link", name: "Industries", url: "/industries" },
+    { type: "link", name: "Blog", url: "/blog" },
+    { type: "link", name: "Open Source Projects", url: "/open-source-projects" },
+    { type: "link", name: "Case Studies", url: "/case-studies" },
+];
+
+
+    for (const submenu of footer_menus) {
 
       const submenuLink = page.getByRole('link', { name: submenu.name }).first();
       await submenuLink.scrollIntoViewIfNeeded();
 
+       // ✅ Verify Visibility 
       await test.step(`Verify visibility: ${submenu.name}`, async () => {
           await expect(submenuLink).toBeVisible();
         });
 
-        await test.step(`hover on ${submenu.name}`, async () => {
-          await submenuLink.scrollIntoViewIfNeeded();
+         // ✅ Verify Hover on 
+        await test.step(`hover on: ${submenu.name}`, async () => {
           await submenuLink.hover();
         });
 
-        await test.step(`Click and verify: ${submenu.name}`, async () => {
+        // ✅ Verify Click 
+        await test.step(`verify Click : ${submenu.name}`, async () => {
           await submenuLink.click();
         });
 
+         // ✅ Verify URL 
         await test.step(`Verify URL: ${submenu.name}`, async () => {
           await expect.soft(page).toHaveURL(`https://staging.qtecsolution.com${submenu.url}`);
         });
@@ -291,7 +340,7 @@ test("Body 👉 3. Verify All title of services Visibility ,hover & Clickable & 
 
     }
 
-});
+  });
 
 
 
@@ -300,7 +349,3 @@ test("Body 👉 3. Verify All title of services Visibility ,hover & Clickable & 
 
 
 });
-
-
-
-

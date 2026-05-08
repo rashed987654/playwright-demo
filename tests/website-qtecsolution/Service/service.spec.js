@@ -7,7 +7,7 @@ test.describe("Services page", () => {
     await page.goto(BASE_URL);
   });
 
-// 1️⃣. Menu Validation
+// 1️⃣. Header Menu Validation
  test("Header: Services menu & Submenu 👉 1a. Verify Services Menu & Submenu (visibility, hover, click)", async ({ page }) => {
   // Header Services Menu
     const servicesMenu = page.getByRole("link", { name: "Services", exact: true  });

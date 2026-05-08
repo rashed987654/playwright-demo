@@ -1,24 +1,28 @@
 import { test, expect } from "@playwright/test";
+const BASE_URL = "https://staging.qtecsolution.com";
 
 test.describe("Services page", () => {
   test.describe.configure({ timeout: 420000 })
   test.beforeEach(async ({ page }) => {
-    // test.setTimeout(180000);
-    await page.goto("https://staging.qtecsolution.com/");
+    await page.goto(BASE_URL);
   });
 
 // 1️⃣. Menu Validation
-  test("Header 👉 1. Verify Services Menu & Submenu  visibility & hover & Clickable state", async ({ page }) => {
-    const servicesMenu = page.getByRole("link", { name: "Services" });
+ test("Header: Services menu & Submenu 👉 1a. Verify Services Menu & Submenu (visibility, hover, click)", async ({ page }) => {
+  // Header Services Menu
+    const servicesMenu = page.getByRole("link", { name: "Services", exact: true  });
 
-    await test.step("Verify Services Menu is visible", async () => {
+    //Services Menu visibility 
+    await test.step("Services Menu → Verify visibility ", async () => {
       await expect(servicesMenu).toBeVisible();
     });
 
-    await test.step("Hover on Services menu", async () => {
+    //Services Menu Hover 
+    await test.step("Services Menu → Verify Hover ", async () => {
       await servicesMenu.hover();
     });
 
+    // All submenu items
     const submenus = [
       { name: "Android", url: "/services/android" },
       { name: "Back End", url: "/services/back-end" },
@@ -34,43 +38,60 @@ test.describe("Services page", () => {
       { name: "Front End", url: "/services/front-end" },
       { name: "iOS", url: "/services/ios" },
       { name: "Legacy Application Modernization", url: "/services/legacy-application-modernization" },
+      { name: "All Services →", url: "/services" },
+
+      // Left Sidebar
       { name: "Machine Learning", url: "/services/machine-learning" },
       { name: "Mobile App", url: "/services/mobile-app" },
       { name: "QA", url: "/services/qa" },
       { name: "SaaS", url: "/services/saas" },
       { name: "Web Development", url: "/services/web-development" },
       { name: "Staff Augmentation", url: "/services/augmentation" },
+      { name: "Mobile App Development", url: "/services/mobile-app" },
       { name: "Software Development", url: "/services/software-development" },
       { name: "E-Commerce Development", url: "/services/e-commerce-development" },
       { name: "Partnerships", url: "/services/partnership" },
-      { name: "All Services →", url: "/services" },
     ];
 
+    // Loop through all submenu items
     const banner = page.getByRole('banner');
 
     for (const submenu of submenus) {
-        const submenuLink = banner.getByRole('link', { name: submenu.name }).first();
-          
-        await test.step(`Verify submenu: ${submenu.name}`, async () => {
-          await expect(submenuLink).toBeVisible();
+        const submenuLink = banner.getByRole('link', { name: submenu.name,  exact: true });
+
+        // 🔍 Visibility
+        await test.step(`🔎 ${submenu.name} → Verify visibility`, async () => {
+          await expect.soft(submenuLink, `${submenu.name} icon should be visible`).toBeVisible();
         });
 
-        await test.step(`hover submenu: ${submenu.name}`, async () => {
+        // 🖱️ Hover
+        await test.step(`🖱️ ${submenu.name} → Verify hover`, async () => {
           await submenuLink.hover();
         });
 
-        await test.step(`Click submenu: ${submenu.name}`, async () => {
+        // 🔗 Href validation
+        await test.step(`🔗 ${submenu.name} → Verify href`, async () => {
+         await expect.soft(submenuLink, `${submenu.name} href mismatch`).toHaveAttribute('href',new RegExp(`${submenu.url}$`));     // The $ symbol = end of string
+        });
+
+        // 🚀 Click 
+        await test.step(`🚀 ${submenu.name} → Verify click `, async () => {
           await submenuLink.click();
         });
-
-        await test.step(`Verify URL: ${submenu.name}`, async () => {
-          await expect.soft(page).toHaveURL(`https://staging.qtecsolution.com${submenu.url}`);
+        
+        // 📍 URL
+        await test.step(`📍 ${submenu.name} → Verify URL `, async () => {
+          await expect.soft(page).toHaveURL(new RegExp(`${submenu.url}$`));  // ${variable} Means: insert variable value
         });
-
-        await test.step("Goback to Services Menu & Hover", async () => {
-          await page.goto("https://staging.qtecsolution.com/");
+      
+        // ↩️ Goback Services Menu
+        await test.step("  Goback to Services Menu & Hover", async () => { 
+          await page.goto(BASE_URL);  
           await servicesMenu.hover();
+
         });
+
+      
   
     }
   });

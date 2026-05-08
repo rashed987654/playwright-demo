@@ -236,7 +236,7 @@ test("Body 👉 3. Verify All title of services Visibility ,hover & Clickable & 
 
 });
 
- // 4️⃣ Footer
+ // 4️⃣ Footer 
   test("Footer 👉 4a. Verify Services Menu, Footer non-clickable Menu validation", async ({ page }) => {
     const servicesMenu = page.getByRole("link", { name: "Services", exact: true });
 

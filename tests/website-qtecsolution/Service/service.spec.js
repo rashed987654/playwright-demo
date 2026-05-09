@@ -172,17 +172,37 @@ test("Header Contact Form  👉 2. Verify full flow", async ({ page }) => {
   });
 
  // 3️⃣ Body
-test("Body 👉 3. Verify All title of services Visibility ,hover & Clickable & redirection correct page", async ({ page }) => {
+test.only("Body: Title link hover 👉 2a. Verify All title of services Visibility ,hover & Clickable & redirection correct page", async ({ page }) => {
 
-  const servicesMenu = page.getByRole('link', { name: 'Services', exact: true });
+  const servicesMenu = page.getByRole('link', { name: 'Services', exact: true  });  //exact: true 
 
-  await test.step("Open Services page", async () => {
-    await expect.soft(servicesMenu).toBeVisible();
-    await servicesMenu.click();
-    await expect.soft(page).toHaveURL(/services/);
-  });
+  //Services Menu visibility 
+    await test.step("Services Menu → Verify visibility", async () => {
+      await expect(servicesMenu).toBeVisible();
+    });
 
-  const submenus = [
+  //Services Menu Hover 
+    await test.step("Services Menu → Verify Hover", async () => {
+      await servicesMenu.hover();
+    });
+
+  //Services Menu href 
+      await test.step("Services Menu → Verify href", async () => {
+      await expect(servicesMenu).toHaveAttribute('href', "https://staging.qtecsolution.com/services");
+    });
+
+  //Services Menu Click 
+    await test.step("Services Menu → Verify Click ", async () => {
+      await servicesMenu.click();
+    });
+
+  //Services Menu URL 
+    await test.step("Services Menu → Verify URL", async () => {
+        await expect(page).toHaveURL(/\/services\/?$/);
+    });
+
+
+  const serviceCards = [
     { name: 'Web Development', url: '/services/web-development' },
     { name: 'Mobile App', url: '/services/mobile-app' },  
     { name: 'Front End', url: '/services/front-end' },
@@ -204,37 +224,50 @@ test("Body 👉 3. Verify All title of services Visibility ,hover & Clickable & 
     { name: 'iOS', url: '/services/ios' },
   ];
 
-  await test.step("Validate all services links", async () => {
+    // Loop through all items
+    for (const serviceCard of serviceCards) {
+      const serviceLink = page.locator('h3.qtec-ind-title a').filter({ hasText: serviceCard.name });
 
-    for (const submenu of submenus) {
-
-      await test.step(`Check service: ${submenu.name}`, async () => {
-
-        const submenuLink = page.getByRole('link', { name: submenu.name }).first();
-        await submenuLink.scrollIntoViewIfNeeded();
-        await expect.soft(submenuLink).toBeVisible();
-
-        await test.step(`Hover on ${submenu.name}`, async () => {
-          await submenuLink.hover();
+        // 🔍 Visibility
+        await test.step(`🔎 ${serviceCard.name} → Verify visibility`, async () => {        
+          await expect.soft(serviceLink, `${serviceCard.name} icon should be visible`).toBeVisible();
         });
 
-        await test.step(`Click and verify ${submenu.name}`, async () => {
-          await submenuLink.click();
-          await expect.soft(page).toHaveURL(`https://staging.qtecsolution.com${submenu.url}`);
+        // 🖱️ Hover
+        await test.step(`🖱️ ${serviceCard.name} → Verify hover`, async () => { 
+          await serviceLink.scrollIntoViewIfNeeded(); await page.waitForTimeout(1000);   // only for Debug purpose
+          await serviceLink.hover();
         });
 
-        await test.step("Navigate back to Services page", async () => {
-          await page.goto("https://staging.qtecsolution.com/");
+
+        // 🔗 Href validation
+        await test.step(`🔗 ${serviceCard.name} → Verify href`, async () => {
+         await expect.soft(serviceLink, `${serviceCard.name} href mismatch`).toHaveAttribute('href',new RegExp(`${serviceCard.url}$`));     // The $ symbol = end of string
+        });
+
+        // 🚀 Click 
+        await test.step(`🚀 ${serviceCard.name} → Verify click `, async () => {
+          
+          await serviceLink.click();
+        });
+        
+        // 📍 URL
+        await test.step(`📍 ${serviceCard.name} → Verify URL `, async () => {  
+          await expect.soft(page).toHaveURL(new RegExp(`${serviceCard.url}$`));  // ${variable} Means: insert variable value
+        });
+
+        // ↩️ Goback Services Menu
+        await test.step("  Goback to Services Menu & Hover", async () => { 
+          await page.goto(BASE_URL);  
+          await servicesMenu.hover();
           await servicesMenu.click();
         });
-
-      });
-
+        
+  
     }
 
-  });
 
-});
+  });
 
  // 4️⃣ Footer 
   test("Footer 👉 4a. Verify Services Menu, Footer non-clickable Menu validation", async ({ page }) => {

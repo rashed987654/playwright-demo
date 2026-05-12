@@ -447,7 +447,7 @@ test("Body 👉 2c. Verify Message Send  Form", async ({ page }) => {
         await servicesMenu.hover();
       });
 
-       // Step 3️⃣ Verify Services Menu href
+       //  Verify Services Menu href
       await test.step("Services Menu → Verify Href", async () => {
         await expect(servicesMenu).toHaveAttribute("href","https://staging.qtecsolution.com/services");
       });
@@ -572,7 +572,7 @@ const labels = [
       await el.scrollIntoViewIfNeeded();  //Optional: Delete it later 
       await page.waitForTimeout(2000);   //Optional: Delete it later 
 
-      // ✅ Visibility Check
+      // Visibility Check
       await test.step(`Verify visibility: ${label.name}`, async () => {
         await expect.soft(el).toBeVisible();  
       });

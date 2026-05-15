@@ -8,7 +8,7 @@ test.describe("Services page", () => {
     await page.goto(BASE_URL);
 });
 
-//This is Test 5
+
 
 // 1️⃣ Header: 
 test("Header 👉 1a. Verify Services Menu & Submenu (Visibility, Hover, Click & URL)", async ({ page }) => {
